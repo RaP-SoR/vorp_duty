@@ -1,23 +1,39 @@
-VORP = exports.vorp_core:vorpAPI()
-local VorpCore = {}
+ocal VorpCore = exports.vorp_core:GetCore()
 
-TriggerEvent("getCore",function(core)
-    VorpCore = core
-end)
+local dutyPairs = {
+    ["police"] = "offpolice",
+    ["offpolice"] = "police",
+    ["doctor"] = "offdoctor",
+    ["offdoctor"] = "doctor"
+}
 
 RegisterServerEvent('duty:setjob')
 AddEventHandler('duty:setjob', function()
     local _source = source
-    local User = VorpCore.getUser(source)
+    
+    if not _source then
+        return
+    end
+    
+    local User = VorpCore.getUser(_source)
+    if not User then
+        return
+    end
+    
     local Character = User.getUsedCharacter
-
-    if Character.job == 'police' then
-        Character.setJob("offpolice")
-    elseif Character.job == 'offpolice' then
-        Character.setJob("police")
-    elseif Character.job == 'doctor' then
-        Character.setJob("offdoctor")
-    elseif Character.job == 'offdoctor' then
-        Character.setJob("doctor")
+    if not Character then
+        return
+    end
+    
+    local currentJob = Character.job
+    local newJob = dutyPairs[currentJob]
+    
+    if newJob then
+        Character.setJob(newJob)
+        TriggerClientEvent("vorp:TipRight", _source, "Dienststatus geändert: " .. newJob, 3000)
+        
+       -- print("Spieler " .. Character.firstname .. " " .. Character.lastname .. " (" .. _source .. ") hat Job gewechselt: " .. currentJob .. " -> " .. newJob)
+    else
+        TriggerClientEvent("vorp:TipRight", _source, "Du hast keinen Job mit Dienstwechsel-Option", 3000)
     end
 end)
