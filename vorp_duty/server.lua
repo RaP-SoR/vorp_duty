@@ -1,4 +1,4 @@
-ocal VorpCore = exports.vorp_core:GetCore()
+local VorpCore = exports.vorp_core:GetCore()
 
 local dutyPairs = {
     ["police"] = "offpolice",
